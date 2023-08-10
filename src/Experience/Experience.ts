@@ -101,7 +101,7 @@ export default class Experience {
   }
 
   resize() {
-    // if (this.world.spheres) this.world.spheres.setSpheres();
+    if (this.world.spheres) this.world.spheres.setSpheres();
     this.camera.resize();
     this.renderer.resize();
   }
@@ -109,7 +109,7 @@ export default class Experience {
   update() {
     // this.camera.update();
 
-    if (this.world.spheres) this.world.spheres.rotateSpheres();
+    if (this.world.spheres) this.world.spheres.spheresAnimation();
 
     this.renderer.update();
   }

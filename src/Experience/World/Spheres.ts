@@ -68,9 +68,9 @@ export default class Spheres {
         this.intersects = this.raycaster.raycaster.intersectObjects(
           this.objectsToTest
         );
-        console.log(this.intersects);
+        // console.log(this.intersects);
 
-        this.setRotateSpheres();
+        this.setSpheresAnimation();
       },
     };
 
@@ -78,7 +78,7 @@ export default class Spheres {
   }
 
   setSpheres() {
-    if (this.sizes.width >= this.sizes.height) {
+    if (!this.spheresGroup && this.sizes.width >= this.sizes.height) {
       /**
        * Sphere Group One
        */
@@ -97,6 +97,8 @@ export default class Spheres {
           new Text(this.resources, "Me", new THREE.Vector3(0, 0.225, textZ)),
         ]
       );
+
+      // console.log(this.sphereGroupOneObj);
 
       /**
        * Sphere Group Two
@@ -198,7 +200,7 @@ export default class Spheres {
       this.spheresGroup.rotation.z = Math.PI;
 
       this.rotateSphereGroups();
-    } else {
+    } else if (!this.spheresGroup && this.sizes.width < this.sizes.height) {
       /**
        * Sphere Group One
        */
@@ -317,26 +319,117 @@ export default class Spheres {
       );
 
       this.spheresGroup.position.set(0, 0, 0);
+      this.rotateSphereGroups();
       // this.spheresGroup.rotation.z = Math.PI;
+    } else if (this.spheresGroup && this.sizes.width >= this.sizes.height) {
+      this.sphereGroupOneObj?.sphereGroupUpdatePosition(
+        new THREE.Vector3(0, 0, -1.0 * spheresMultiplier),
+        [
+          new THREE.Vector3(0, -0.075, textZ),
+          new THREE.Vector3(0, 0.225, textZ),
+        ]
+      );
+      this.sphereGroupTwoObj?.sphereGroupUpdatePosition(
+        new THREE.Vector3(
+          -0.951 * spheresMultiplier,
+          0,
+          -0.309 * spheresMultiplier
+        ),
+        [new THREE.Vector3(0, 0.025, textZ)]
+      );
+      this.sphereGroupThreeObj?.sphereGroupUpdatePosition(
+        new THREE.Vector3(
+          -0.5878 * spheresMultiplier,
+          0,
+          0.809 * spheresMultiplier
+        ),
+        [new THREE.Vector3(0, 0.025, textZ)]
+      );
+      this.sphereGroupFourObj?.sphereGroupUpdatePosition(
+        new THREE.Vector3(
+          0.5878 * spheresMultiplier,
+          0,
+          0.809 * spheresMultiplier
+        ),
+        [
+          new THREE.Vector3(0, -0.075, textZ),
+          new THREE.Vector3(0, 0.225, textZ),
+        ]
+      );
+      this.sphereGroupFiveObj?.sphereGroupUpdatePosition(
+        new THREE.Vector3(
+          0.951 * spheresMultiplier,
+          0,
+          -0.309 * spheresMultiplier
+        ),
+        [new THREE.Vector3(0, 0.025, textZ)]
+      );
+
+      this.spheresGroup.rotation.x = Math.PI * 0.0425;
+      this.spheresGroup.rotation.y = (0.0 * (Math.PI * 2.0)) / 5.0;
+      this.spheresGroup.rotation.z = Math.PI;
+      this.rotateSphereGroups();
+    } else if (this.spheresGroup && this.sizes.width < this.sizes.height) {
+      this.sphereGroupOneObj?.sphereGroupUpdatePosition(
+        new THREE.Vector3(0, 4.0, -1.0 * spheresMultiplier),
+        [
+          new THREE.Vector3(-0.025, 0.175, textZ),
+          new THREE.Vector3(-0.025, 0.525, textZ),
+        ]
+      );
+      this.sphereGroupTwoObj?.sphereGroupUpdatePosition(
+        new THREE.Vector3(0, 2.0, -1.0 * spheresMultiplier),
+        [new THREE.Vector3(-0.025, 0.175, textZ)]
+      );
+      this.sphereGroupThreeObj?.sphereGroupUpdatePosition(
+        new THREE.Vector3(0, 0, -1.0 * spheresMultiplier),
+        [new THREE.Vector3(-0.025, 0.025, textZ)]
+      );
+      this.sphereGroupFourObj?.sphereGroupUpdatePosition(
+        new THREE.Vector3(0, -2.0, -1.0 * spheresMultiplier),
+        [
+          new THREE.Vector3(-0.025, -0.2625, textZ),
+          new THREE.Vector3(-0.025, 0.0625, textZ),
+        ]
+      );
+      this.sphereGroupFiveObj?.sphereGroupUpdatePosition(
+        new THREE.Vector3(0, -4.0, -1.0 * spheresMultiplier),
+        [new THREE.Vector3(-0.025, -0.325, textZ)]
+      );
+
+      this.spheresGroup.rotation.x = 0;
+      this.spheresGroup.rotation.y = 0;
+      this.spheresGroup.rotation.z = 0;
+      this.rotateSphereGroups();
     }
 
-    this.scene.add(this.spheresGroup);
+    this.scene.add(this.spheresGroup!);
   }
 
   rotateSphereGroups() {
     if (!this.sphereGroupObjsArr) return;
 
     this.sphereGroupObjsArr.forEach((el) => {
-      el.update();
+      el.sphereGroupUpdate();
     });
   }
 
-  rotateSpheres() {}
+  spheresAnimation() {
+    this.rotateSphereGroups();
+  }
 
-  setRotateSpheres() {
+  setSpheresAnimation() {
     const modifySpheresRotationMethod = (comparison: number) => {
-      this.rotateSpheres = () => {
+      this.spheresAnimation = () => {
         if (!this.spheresGroup) return;
+
+        if (this.sizes.height > this.sizes.width) {
+          this.spheresGroup.rotation.y = 0;
+          this.rotateSphereGroups();
+          return (this.spheresAnimation = () => {
+            this.rotateSphereGroups();
+          });
+        }
 
         const distance =
           comparison === 0
@@ -350,11 +443,15 @@ export default class Spheres {
 
         if (this.spheresGroup.rotation.y % (Math.PI * 2.0) === comparison) {
           this.rotateSphereGroups();
-          return (this.rotateSpheres = () => {});
+          return (this.spheresAnimation = () => {
+            this.rotateSphereGroups();
+          });
         } else if (distance < 0.00025) {
           this.rotateSphereGroups();
           this.spheresGroup.rotation.y = comparison;
-          return (this.rotateSpheres = () => {});
+          return (this.spheresAnimation = () => {
+            this.rotateSphereGroups();
+          });
         } else {
           this.rotateSphereGroups();
           this.spheresGroup.rotation.y += Math.abs(
