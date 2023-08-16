@@ -23,6 +23,8 @@ export default class Spheres {
   sphereGroupFiveObj: SphereGroup | null;
   sphereGroupObjsArr: SphereGroup[] | null;
   spheresGroup: THREE.Group | null;
+  selectedSphere: number;
+  comparison: number;
   objectsToTest: THREE.Object3D<THREE.Event>[];
   intersects: THREE.Intersection<THREE.Object3D<THREE.Event>>[];
   testSpheresCallbackObj: callbackObject;
@@ -51,6 +53,9 @@ export default class Spheres {
     this.sphereGroupObjsArr = null;
     this.spheresGroup = null;
 
+    this.selectedSphere = 1;
+    this.comparison = 0;
+
     this.setSpheres();
 
     this.objectsToTest = [];
@@ -68,7 +73,7 @@ export default class Spheres {
         this.intersects = this.raycaster.raycaster.intersectObjects(
           this.objectsToTest
         );
-        // console.log(this.intersects);
+        console.log(this.intersects);
 
         this.setSpheresAnimation();
       },
@@ -366,7 +371,7 @@ export default class Spheres {
       );
 
       this.spheresGroup.rotation.x = Math.PI * 0.0425;
-      this.spheresGroup.rotation.y = (0.0 * (Math.PI * 2.0)) / 5.0;
+      this.spheresGroup.rotation.y = this.comparison;
       this.spheresGroup.rotation.z = Math.PI;
       this.rotateSphereGroups();
     } else if (this.spheresGroup && this.sizes.width < this.sizes.height) {
@@ -419,46 +424,71 @@ export default class Spheres {
   }
 
   setSpheresAnimation() {
-    const modifySpheresRotationMethod = (comparison: number) => {
-      this.spheresAnimation = () => {
-        if (!this.spheresGroup) return;
+    const modifySpheresRotationMethod = () => {
+      if (this.sizes.width >= this.sizes.height) {
+        /**
+         * Full screen sphere animation
+         */
+        this.spheresAnimation = () => {
+          if (!this.spheresGroup) return;
 
-        if (this.sizes.height > this.sizes.width) {
-          this.spheresGroup.rotation.y = 0;
-          this.rotateSphereGroups();
-          return (this.spheresAnimation = () => {
+          if (this.sizes.height > this.sizes.width) {
+            this.spheresGroup.rotation.y = 0;
             this.rotateSphereGroups();
-          });
-        }
+            return (this.spheresAnimation = () => {
+              this.rotateSphereGroups();
+            });
+          }
 
-        const distance =
-          comparison === 0
-            ? Math.abs(
-                (this.spheresGroup.rotation.y % (Math.PI * 2.0)) - Math.PI * 2.0
-              )
-            : Math.abs(
-                (this.spheresGroup.rotation.y % (Math.PI * 2.0)) - comparison
-              );
-        // console.log(distance);
+          const distance =
+            this.comparison === 0
+              ? Math.abs(
+                  (this.spheresGroup.rotation.y % (Math.PI * 2.0)) -
+                    Math.PI * 2.0
+                )
+              : Math.abs(
+                  (this.spheresGroup.rotation.y % (Math.PI * 2.0)) -
+                    this.comparison
+                );
+          // console.log(distance);
 
-        if (this.spheresGroup.rotation.y % (Math.PI * 2.0) === comparison) {
-          this.rotateSphereGroups();
-          return (this.spheresAnimation = () => {
+          if (
+            this.spheresGroup.rotation.y % (Math.PI * 2.0) ===
+            this.comparison
+          ) {
             this.rotateSphereGroups();
-          });
-        } else if (distance < 0.00025) {
-          this.rotateSphereGroups();
-          this.spheresGroup.rotation.y = comparison;
-          return (this.spheresAnimation = () => {
+            return (this.spheresAnimation = () => {
+              this.rotateSphereGroups();
+            });
+          } else if (distance < 0.00025) {
             this.rotateSphereGroups();
-          });
-        } else {
-          this.rotateSphereGroups();
-          this.spheresGroup.rotation.y += Math.abs(
-            1 - Math.pow(1 - 0.01 * distance, 3)
-          );
-        }
-      };
+            this.spheresGroup.rotation.y = this.comparison;
+            return (this.spheresAnimation = () => {
+              this.rotateSphereGroups();
+            });
+          } else {
+            this.rotateSphereGroups();
+            this.spheresGroup.rotation.y += Math.abs(
+              1 - Math.pow(1 - 0.01 * distance, 3)
+            );
+          }
+        };
+      } else if (this.sizes.height > this.sizes.width) {
+        /**
+         * Mobile spheres animation
+         */
+        this.spheresAnimation = () => {
+          if (!this.spheresGroup) return;
+
+          if (this.sizes.width >= this.sizes.height) {
+            this.spheresGroup.rotation.y = this.comparison;
+            this.rotateSphereGroups();
+            return (this.spheresAnimation = () => {
+              this.rotateSphereGroups();
+            });
+          }
+        };
+      }
     };
 
     if (this.intersects.length > 0) {
@@ -468,27 +498,41 @@ export default class Spheres {
           // console.log(aboutMe);
           // aboutMe.classList.remove("hidden");
           // overlay.classList.remove("hidden");
-          modifySpheresRotationMethod(0);
+          this.selectedSphere = 1.0;
+          this.comparison = this.selectedSphere - 1.0;
+          modifySpheresRotationMethod();
           break;
 
         case "sphereTwo":
           // console.log("click on object 2");
-          modifySpheresRotationMethod((1.0 * (Math.PI * 2.0)) / 5.0);
+          this.selectedSphere = 2.0;
+          this.comparison =
+            ((this.selectedSphere - 1.0) * (Math.PI * 2.0)) / 5.0;
+          modifySpheresRotationMethod();
           break;
 
         case "sphereThree":
           // console.log("click on object 3");
-          modifySpheresRotationMethod((2.0 * (Math.PI * 2.0)) / 5.0);
+          this.selectedSphere = 3.0;
+          this.comparison =
+            ((this.selectedSphere - 1.0) * (Math.PI * 2.0)) / 5.0;
+          modifySpheresRotationMethod();
           break;
 
         case "sphereFour":
           // console.log("click on object 4");
-          modifySpheresRotationMethod((3.0 * (Math.PI * 2.0)) / 5.0);
+          this.selectedSphere = 4.0;
+          this.comparison =
+            ((this.selectedSphere - 1.0) * (Math.PI * 2.0)) / 5.0;
+          modifySpheresRotationMethod();
           break;
 
         case "sphereFive":
           // console.log("click on object 5");
-          modifySpheresRotationMethod((4.0 * (Math.PI * 2.0)) / 5.0);
+          this.selectedSphere = 5.0;
+          this.comparison =
+            ((this.selectedSphere - 1.0) * (Math.PI * 2.0)) / 5.0;
+          modifySpheresRotationMethod();
           break;
       }
     }
