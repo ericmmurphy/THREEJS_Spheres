@@ -43,21 +43,17 @@ export default class Sphere {
     this.textures.normal.repeat.set(2.5, 2.5);
     this.textures.normal.wrapS = THREE.RepeatWrapping;
     this.textures.normal.wrapT = THREE.RepeatWrapping;
-
-    this.textures.ao = this.resources.items.bluePlasticAOTexture;
-    this.textures.ao.repeat.set(2.5, 2.5);
-    this.textures.ao.wrapS = THREE.RepeatWrapping;
-    this.textures.ao.wrapT = THREE.RepeatWrapping;
   }
 
   setMaterial() {
     // this.material = new THREE.MeshMatcapMaterial();
     // this.material.matcap = this.resources.items.matcapTexture;
     this.material = new THREE.MeshStandardMaterial({
+      // color: 0xd1dbe4,
       map: this.textures.color,
       normalMap: this.textures.normal,
-      aoMap: this.textures.ao,
-      aoMapIntensity: 1.0,
+      roughness: 0.0,
+      metalness: 0.6,
     });
   }
 

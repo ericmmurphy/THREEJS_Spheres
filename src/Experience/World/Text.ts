@@ -44,13 +44,13 @@ export default class Text {
 
   setMaterial() {
     this.material = new THREE.MeshStandardMaterial({
-      color: "#ffffff",
+      color: 0xffffff,
     });
   }
 
   setMesh(position: THREE.Vector3) {
     this.mesh = new THREE.Mesh(this.geometry!, this.material!);
-    // this.mesh.castShadow = true;
+    this.mesh.castShadow = true;
     this.mesh.position.x = position.x;
     this.mesh.position.y = position.y;
     this.mesh.position.z = position.z;

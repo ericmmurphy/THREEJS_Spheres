@@ -26,9 +26,4 @@ export default [
     type: "texture",
     path: "textures/Plastic008_1K-PNG/Plastic008_1K_NormalGL.png",
   },
-  {
-    name: "bluePlasticAOTexture",
-    type: "texture",
-    path: "textures/Plastic008_1K-PNG/Plastic008_1K_Displacement.png",
-  },
 ];

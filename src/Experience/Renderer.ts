@@ -30,7 +30,8 @@ export default class Renderer {
 
   setInstance() {
     this.instance.useLegacyLights = false;
-    this.instance.outputEncoding = THREE.sRGBEncoding;
+    // this.instance.outputEncoding = THREE.sRGBEncoding;
+    this.instance.outputColorSpace = THREE.SRGBColorSpace;
     this.instance.toneMapping = THREE.CineonToneMapping;
     this.instance.toneMappingExposure = 1.75;
     this.instance.shadowMap.enabled = true;
