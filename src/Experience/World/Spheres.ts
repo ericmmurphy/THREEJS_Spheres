@@ -65,6 +65,7 @@ export default class Spheres {
       callbackName: "testSpheres",
       callback: () => {
         if (!this.spheresGroup) return;
+        // if (!this.overlayCanvas.className.split(" ").includes("hidden")) return;
 
         this.objectsToTest = this.spheresGroup.children.map(
           (el) => el.children[0]
@@ -496,8 +497,13 @@ export default class Spheres {
         case "sphereOne":
           // console.log("click on object 1");
           // console.log(aboutMe);
-          // aboutMe.classList.remove("hidden");
-          // overlay.classList.remove("hidden");
+          // const overlay = document.querySelector("div.overlay");
+          // const overlay = document.querySelector("canvas.overlay");
+          // const aboutMe = document.querySelector("div.aboutMe");
+
+          // overlay!.classList.remove("hidden");
+          // aboutMe!.classList.remove("hidden");
+
           this.selectedSphere = 1.0;
           this.comparison = this.selectedSphere - 1.0;
           modifySpheresRotationMethod();
